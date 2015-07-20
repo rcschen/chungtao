@@ -20,16 +20,44 @@ void loop() {
           restClient.stop();
      }
      delay(50); 
-     Serial.println("----------");
 }
 
 void process(YunClient restClient) {
   
-     String command = restClient.readStringUntil('/');
+     String command = restClient.readStringUntil('\');
      Serial.println(">>>>>>>>>>"+command);
-     if (command == "robot") {   
-        //robotCommand(client);
+     if (command == "fullfw") {   
+         fullfw(restClient);
+     }
+     else if (command == "back") {
+         back(restClient);
+     }
+     else if (command == "turnright") {
+         turnRight(restClient);
+     }
+     else if (command == "turnleft") {
+         turnLeft(restClient);
+     }
+     else if(command == "stop") {
+         getStop(restClient);
+     }
+     else {
+         Serial.println("Command Not Found:" + command);
      }
 }
 
+void fullfw(YunClient client) {
+}
+
+void back(YunClient client) {
+}
+
+void turnRight(YunClient client){
+}
+
+void turnLeft(YunClient client) {
+}
+
+void getStop (YunClient client) {
+}
 

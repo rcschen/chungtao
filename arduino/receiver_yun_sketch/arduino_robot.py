@@ -9,27 +9,27 @@ class robotConnect(object):
           self.connection = httplib.HTTPConnection(self.robotAddress)
 
       def stop(self):
-          cmd = "/arduino/robot/stop"            
+          cmd = "/arduino/stop"            
           self._connect(cmd)
 
       def left(self):
-          cmd = "/arduino/robot/turnleft"            
+          cmd = "/arduino/turnleft/0.7"            
           self._connect(cmd)
 
       def right(self):
-          cmd = "/arduino/robot/turnright"            
+          cmd = "/arduino/turnright/0.8"            
           self._connect(cmd)
 
       def fullfw(self):
-          cmd = "/arduino/robot/fullfw"            
+          cmd = "/arduino/fullfw"            
           self._connect(cmd)
 		  
       def back(self):
-          cmd = "/arduino/robot/back"            
+          cmd = "/arduino/back"            
           self._connect(cmd)
 
       def test(self):
-          cmd = "/arduino/robot/test/123"
+          cmd = "/arduino/test/123"
           self._connect(cmd)
 
       def _connect(self, action):
