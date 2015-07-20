@@ -3,6 +3,7 @@ import urllib
 import numpy as np
 import threading
 import time
+import imgprocess
 
 class Eyes(threading.Thread):
       def __init__(self, videoUrl, queue):
@@ -58,4 +59,20 @@ class Frame:
           cv2.imshow( 'i', self.frame )
           if cv2.waitKey(1) == 27:
                    exit(0)
-   
+    
+      def applyProcessToFrame(self, *par ):
+          processName = par.__getitem__(0)
+          if not processName in dir(imgprocess):
+             print "Selected process is not found: ", processName
+          tmp_par = list(par)
+          tmp_par[0] = self.frame
+          par = tuple(tmp_par)
+          try:
+             feature = getattr(imgprocess, processName)(*par)
+             return Frame( feature )
+
+          except Exception as e:
+             print "Run image process error:", e
+             return None         
+        
+          

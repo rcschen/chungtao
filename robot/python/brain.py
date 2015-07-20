@@ -9,7 +9,7 @@ class Brain(threading.Thread):
           while True:
              frame = self._getFrame()
              if frame:
-                frame.showFrame()
+                frame.applyProcessToFrame("drawContours").showFrame()
 
       def _getFrame(self):
           if not self.frameQueue.isEmpty():
