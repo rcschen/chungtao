@@ -6,14 +6,17 @@ import time
 import imgprocess
 
 class Eyes(threading.Thread):
-      def __init__(self, videoUrl, queue):
+      def __init__(self, videoUrl):
           super(Eyes,  self ).__init__(name = "Eyes")
           self._video = urllib.urlopen(videoUrl)
           self._bytes = ''
           self.frameSize = 1024
-          self.queue = queue
+          self.frameQueue = None
           self._needReset = False
           self._closeEyes = False
+
+      def setFrameQueue(self, frameQueue):
+          self.frameQueue = frameQueue
 
       def run(self):
           while True:
@@ -30,13 +33,13 @@ class Eyes(threading.Thread):
 
       def resetQueue(self):
           self._needReset = True
-          while not self.queue.isEmpty():
-             self.queue.get()
+          while not self.frameQueue.isEmpty():
+             self.frameQueue.get()
           self._needReset = False
 
       def _collectFrames(self):
-          if not self.queue.isFull():
-             self.queue.put( self._captureFrame() )
+          if not self.frameQueue.isFull():
+             self.frameQueue.put( self._captureFrame() )
 
       def _captureFrame(self):
           #_bytes = ''

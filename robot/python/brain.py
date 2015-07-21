@@ -1,9 +1,17 @@
 import threading
+from queue import QueueFactory
 
 class Brain(threading.Thread):
-      def __init__(self, queue):
+      def __init__(self):
           super(Brain,  self ).__init__(name = "Brain")
-          self.frameQueue = queue
+          self.frameQueue = None
+          self.feetCommandQueue = None
+
+      def setQueue(self, qName, queue ):
+          if qName in dir(self):
+             setattr(self, qName, queue)
+          else:
+             print "Queue name not found", qName
 
       def run(self):
           while True:
