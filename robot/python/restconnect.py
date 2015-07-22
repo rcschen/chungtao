@@ -10,12 +10,12 @@ class RestClient:
           self._connection = httplib.HTTPConnection( changedAddr )
           return self
 
-      def sendResponse( restUrl ):
+      def sendResponse(self, restUrl ):
           print "action is ", restUrl 
-          self.connection.putrequest("GET", restUrl)
-          self.connection.endheaders()
+          self._connection.putrequest("GET", restUrl)
+          self._connection.endheaders()
           try:
-             response = self.connection.getresponse()
+             response = self._connection.getresponse()
              return response
           except Exception as e:
              print e

@@ -15,11 +15,13 @@ class Feet(threading.Thread):
 class WheelFeet(Feet):
       def __init__(self, feetUrl):
           super(WheelFeet, self).__init__(feetUrl)
-      
+          
       def run(self):
           while True:
                 self._runFeetCommand()
 
       def _runFeetCommand(self):
           if not self.feetCommandQueue.isEmpty():
-             self.feetCommandQueue.get().sendResponse()
+             move = self.feetCommandQueue.get()
+             move.setRobAddr(self.feetUrl)
+             move.sendResponse()

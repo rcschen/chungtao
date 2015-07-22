@@ -1,30 +1,31 @@
-from restconnection import RestClient
+from restconnect import RestClient
 
 class Move:
-      def __init__(self, robotAddress = 'arduino.chuntao')
+      def __init__(self, robotAddress = 'arduino.chuntao'):
           self._connection = RestClient( robotAddress ) 
           self._cmd = ''
 
-      def changeRobAddr( changedAddr ):
+      def setRobAddr(self, changedAddr ):
+          print "change addr:", changedAddr
           self._connection.changeRestServer( changedAddr )
        
       def stop(self):
-          self._sendResponse( 'arduino/stop' )
+          self._cmd = '/arduino/stop'
  
       def fullfw(self):
-          cmd = 'arduino/fullfw'
-
+          self._cmd = '/arduino/fullfw'
+        
       def back(self):
-          cmd = 'arduino/back'
+          self._cmd = '/arduino/back'
 
-      def right(self, factor):
-          cmd = 'arduino/turnright/'+str(factor)
+      def right(self, factor=0.8):
+          self._cmd = '/arduino/turnright/'+str(factor)
 
-      def left(self, factor):
-          cmd = 'arduino/turnleft/'+str(factor)
+      def left(self, factor=0.8):
+          self._cmd = '/arduino/turnleft/'+str(factor)
 
-      def sendResponse(self cmd = None):
-          if not cmd:
+      def sendResponse(self, cmd = None):
+          if cmd:
              self._cmd = cmd
           self._connection.sendResponse(self._cmd) 
  

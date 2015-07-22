@@ -3,9 +3,11 @@ from brain import Brain
 from feet import WheelFeet
 
 from queue import QueueFactory
+import threading
 
-class Robot(object):
+class Robot(threading.Thread):
       def __init__(self):
+          super(Robot, self).__init__(name="Robot")
           self._senses = []
           self._set_senses()
           self._start_senses()
@@ -30,16 +32,15 @@ class Chuntao(Robot):
       def __init__(self, eyesUrl, feetUrl):
           self.eyes = Eyes(eyesUrl)
           self.brain = Brain()
-          self.feet = WheelFeet(feetUrl) 
+          self.feet = WheelFeet(feetUrl)
           super(Chuntao, self).__init__()
-
+ 
       def _set_brain(self):
           self._senses.append(self.brain)
 
       def _set_eyes(self):
           frameQueue = QueueFactory().getQueue('simple')
           self._senses.append(self.eyes)
-          print dir(self.eyes)
           self.eyes.setFrameQueue(frameQueue)
           self.brain.setQueue('frameQueue', frameQueue)
 
@@ -53,7 +54,39 @@ class Chuntao(Robot):
           self._set_eyes()
           self._set_feet()
           self._set_brain()
+      
+      def manualFeetControl(self, *par):
+          self.brain.feetControl(*par)
 
 
 if __name__ == '__main__':
-   rob = Chuntao('http://192.168.1.235:8080/?action=stream','192.168.1.235')          
+   rob = Chuntao('http://192.168.1.219:8080/?action=stream','192.168.1.219')       
+   rob.start() 
+
+   leave = True
+   while leave :
+      control = raw_input(">>>>")
+      try:
+         if control == "s":
+            print "stop"
+            rob.manualFeetControl('stop')
+         elif control == "d":
+            print "right"
+            rob.manualFeetControl('right',0.8)
+         elif control == "a":
+            print "left"
+            rob.manualFeetControl('left',0.8)
+         elif control == "w":
+            print "fullfw"
+            rob.manualFeetControl('fullfw')
+         elif control == "x":
+            print "back"
+            rob.manualFeetControl('back')
+         elif control =="q":
+            print "bye-bye"
+            leave = False
+         else:
+            print "Not control command"
+      except Exception as e:
+         print e
+
