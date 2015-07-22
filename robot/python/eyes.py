@@ -8,7 +8,10 @@ import imgprocess
 class Eyes(threading.Thread):
       def __init__(self, videoUrl):
           super(Eyes,  self ).__init__(name = "Eyes")
-          self._video = urllib.urlopen(videoUrl)
+          try:
+            self._video = urllib.urlopen(videoUrl)
+          except Exception as e:
+            print 'Can not connect to video url: ', e
           self._bytes = ''
           self.frameSize = 1024
           self.frameQueue = None
@@ -44,14 +47,17 @@ class Eyes(threading.Thread):
       def _captureFrame(self):
           #_bytes = ''
           while True:
-               self._bytes += self._video.read(self.frameSize)
-               startAnchor = self._bytes.find('\xff\xd8')
-               endAnchor = self._bytes.find('\xff\xd9')
-               if startAnchor != -1 and endAnchor != -1:
-                  jpg = self._bytes[startAnchor: endAnchor+2]
-                  self._bytes = self._bytes[endAnchor+3:]
-                  frame = cv2.imdecode(np.fromstring(jpg, dtype = np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
-                  return Frame(frame)
+               try:
+                  self._bytes += self._video.read(self.frameSize)
+                  startAnchor = self._bytes.find('\xff\xd8')
+                  endAnchor = self._bytes.find('\xff\xd9')
+                  if startAnchor != -1 and endAnchor != -1:
+                     jpg = self._bytes[startAnchor: endAnchor+2]
+                     self._bytes = self._bytes[endAnchor+3:]
+                     frame = cv2.imdecode(np.fromstring(jpg, dtype = np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
+                     return Frame(frame)
+               except Exception as e:
+                  print 'Can not capture frame: ',e
 
 class Frame:
       def __init__(self, frame):

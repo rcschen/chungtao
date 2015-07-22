@@ -18,3 +18,8 @@ class WheelFeet(Feet):
       
       def run(self):
           while True:
+                self._runFeetCommand()
+
+      def _runFeetCommand(self):
+          if not self.feetCommandQueue.isEmpty():
+             self.feetCommandQueue.get().sendResponse()
