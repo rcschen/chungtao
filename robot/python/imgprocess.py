@@ -73,7 +73,7 @@ def findContours(img):
     contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     return contours
 
-def drawContours(img):
+def drawContours(img, contourColor = (0,255,0)):
     contours = findContours(img)
-    cv2.drawContours(img, contours, -1, (0,255,0), 3)
+    cv2.drawContours(img, contours, -1, contourColor, 3)
     return img
