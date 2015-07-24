@@ -15,7 +15,8 @@ class SimpleQueue:
           if not self._q.full():
              self._q.put(data)
           else:
-             print "queue is full"
+             #print "queue is full"
+             pass
  
       def get(self):
           if not self._q.empty():

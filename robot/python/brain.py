@@ -33,15 +33,18 @@ class Brain(threading.Thread):
               getattr(move, cmd)( *par )
               self.feetCommandQueue.put(move)
           else:
-              print 'No feet command' 
+              print 'No feet command', par[0] 
 
       def _wayToGoBydrawContours(self, frame): 
           if not frame:
              return
-          Contours(frame).runSetps()         
+          contours = Contours(frame)
+          self.feetControl(*contours.runSteps())
+          contours._contour.showFrame()
 
 class Contours:
       def __init__(self, frame):
+          self._forwardMargen = 10
           self._centralMargen = 5
           self._frame = frame
           self._steps = []
@@ -54,6 +57,8 @@ class Contours:
           self._breakStepRun = False
           self._bottonLine = []
           self._candidatePosition = []
+          self._finalPosition = self._mid
+          self._movingPar = ('stop')
           self.setSteps()
 
       def runSteps(self):
@@ -61,18 +66,19 @@ class Contours:
               if self._breakStepRun:
                  break
               getattr(self,step)()          
-          return self._return
+          return self._movingPar
 
       def setSteps(self):  
-          self._setups = ['setupContour', 
+          self._steps = ['setupContour', 
                           'findButtonLine',
                           'isOnTheWay',
                           'getFarthestPosition',
-                          'findNearestPosition']
-
+                          'findNearestPosition',
+                          'generateMovingPar']
       def setupContour(self):
-          self._contour = frame.applyProcessToFrame("drawContours", contourColor)
-          self._high, self._weight, channels = self._contour.frame.shape()          
+          self._contour = self._frame.applyProcessToFrame("drawContours", self._contourColor)
+
+          self._high, self._weight, channels = self._contour.frame.shape 
           self._mid = self._weight/2           
 
       def findButtonLine(self):
@@ -82,24 +88,38 @@ class Contours:
                  self._bottonLine.append(w)
 
       def isOnTheWay(self):
-          if len([ p for p in self._bottonLine if math.fabs( p - self._mid ) < self._centralMargen ]) = 0 :
+          if len([ p for p in self._bottonLine if math.fabs( p - self._mid ) < self._centralMargen ]) == 0 :
              self._candidatePosition = self._bottonLine
-             self._setups.remove('getFarthestPosition')
+             self._steps.remove('getFarthestPosition')
 
       def getFarthestPosition(self):
           high_set = []
           contourImg = self._contour.frame
           for p in self._bottonLine:
-              h_anchor = self._high -1
+              h_anchor = self._high - 6
               while not h_anchor < 0:
                     if list(contourImg[h_anchor][p]) == list(self._contourColor) or h_anchor == 0 :
+                       #print "BBBBBBBBBb",(p, h_anchor)
                        high_set.append((p, h_anchor))
                        break
                     h_anchor = h_anchor - 1
-          sorted_position = sorted( hight_set, key = lambda x:x[1] )
+          sorted_position = sorted( high_set, key = lambda x:x[1] )
           self._candidatePosition = [ p[0] for p in sorted_position if p[1] == sorted_position[1][1] ]
          
       def findNearestPosition(self):
-          pass
+          candWithDistFromMid = []
+          for p in self._candidatePosition:
+              candWithDistFromMid.append((p, math.fabs( p - self._mid)))
+          sorted_position = sorted( candWithDistFromMid, key = lambda x:x[1] )
+          if len(sorted_position) > 0:
+             self._finalPosition = sorted_position[0][0]
 
-          
+      def generateMovingPar(self):
+          way = self._mid - self._finalPosition
+          way_percent = way/float(self._weight)
+          if math.fabs(way) <= self._forwardMargen:
+             self._movingPar = ('fullfw',)
+          elif way > self._forwardMargen:
+             self._movingPar = ('left', way_percent)
+          elif way < -self._forwardMargen:
+             self._movingPar = ('right', way_percent)

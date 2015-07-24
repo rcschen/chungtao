@@ -17,6 +17,7 @@ class Robot(threading.Thread):
        
       def _start_senses(self):
           for sense in self._senses:
+              print sense
               sense.start()              
 
       def controller(self):
@@ -52,9 +53,14 @@ class Chuntao(Robot):
 
       def _set_senses(self):
           self._set_eyes()
+          print "eye"
           self._set_feet()
+          print "feet"
           self._set_brain()
-      
+          print "brain"
+
+
+     
       def manualFeetControl(self, *par):
           self.brain.feetControl(*par)
 

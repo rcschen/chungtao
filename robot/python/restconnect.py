@@ -11,7 +11,7 @@ class RestClient:
           return self
 
       def sendResponse(self, restUrl ):
-          print "action is ", restUrl 
+          #print "action is ", restUrl 
           self._connection.putrequest("GET", restUrl)
           self._connection.endheaders()
           try:

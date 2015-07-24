@@ -46,6 +46,7 @@ class Eyes(threading.Thread):
 
       def _captureFrame(self):
           #_bytes = ''
+         
           while True:
                try:
                   self._bytes += self._video.read(self.frameSize)

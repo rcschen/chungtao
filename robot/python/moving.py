@@ -6,7 +6,6 @@ class Move:
           self._cmd = ''
 
       def setRobAddr(self, changedAddr ):
-          print "change addr:", changedAddr
           self._connection.changeRestServer( changedAddr )
        
       def stop(self):
@@ -27,5 +26,6 @@ class Move:
       def sendResponse(self, cmd = None):
           if cmd:
              self._cmd = cmd
+          print self._cmd
           self._connection.sendResponse(self._cmd) 
  
