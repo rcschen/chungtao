@@ -1,13 +1,19 @@
 import threading
 import math
+import util
 from queue import QueueFactory
 from moving import Move
+import time
  
 class Brain(threading.Thread):
-      def __init__(self):
+      def __init__(self,debug, show_contour, blink_time):
           super(Brain,  self ).__init__(name = "Brain")
           self.frameQueue = None
           self.feetCommandQueue = None
+          self._debug_mode = debug
+          self._last_time = time.time()
+          self._blink_time = blink_time
+          self._show_contour = show_contour
 
       def setQueue(self, qName, queue ):
           if qName in dir(self):
@@ -17,13 +23,18 @@ class Brain(threading.Thread):
 
       def run(self):
           while True:
+             duration, updatedTime = util.get_duration_timestamp( self._last_time )
              frame = self._getFrame()
-             self._wayToGoBydrawContours(frame)             
-
+             if duration >= self._blink_time and not self._debug_mode and frame:
+                self._last_time = updatedTime
+                self._wayToGoBydrawContours(frame)             
+             
       def _getFrame(self):
           if not self.frameQueue.isEmpty():
-             return self.frameQueue.get()
-      
+             item = self.frameQueue.get()
+             return item
+          return None
+              
       def feetControl(self, *par):
           move = Move()
           if par[0] in dir(move):
@@ -37,10 +48,12 @@ class Brain(threading.Thread):
 
       def _wayToGoBydrawContours(self, frame): 
           if not frame:
+             print "No Frame"
              return
           contours = Contours(frame)
           self.feetControl(*contours.runSteps())
-          contours._contour.showFrame()
+          if self._show_contour:
+             contours._contour.showFrame()
 
 class Contours:
       def __init__(self, frame):
@@ -63,6 +76,7 @@ class Contours:
 
       def runSteps(self):
           for step in self._steps:
+              print ">>>>",step
               if self._breakStepRun:
                  break
               getattr(self,step)()          
@@ -75,9 +89,9 @@ class Contours:
                           'getFarthestPosition',
                           'findNearestPosition',
                           'generateMovingPar']
+
       def setupContour(self):
           self._contour = self._frame.applyProcessToFrame("drawContours", self._contourColor)
-
           self._high, self._weight, channels = self._contour.frame.shape 
           self._mid = self._weight/2           
 
@@ -116,10 +130,15 @@ class Contours:
 
       def generateMovingPar(self):
           way = self._mid - self._finalPosition
-          way_percent = way/float(self._weight)
+          way_percent = math.fabs(way/float(self._weight))
+          print way
           if math.fabs(way) <= self._forwardMargen:
-             self._movingPar = ('fullfw',)
+             print "forward>>>"
+             self._movingPar = ('fullfw', 1)
           elif way > self._forwardMargen:
              self._movingPar = ('left', way_percent)
+             print "left>>>>",way_percent
           elif way < -self._forwardMargen:
              self._movingPar = ('right', way_percent)
+             print "right>>>",way_percent
+

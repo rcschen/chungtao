@@ -11,7 +11,7 @@ class Robot(threading.Thread):
           self._senses = []
           self._set_senses()
           self._start_senses()
-
+          
       def _set_senses(self):
           print "No senses are set!!!"
        
@@ -30,9 +30,9 @@ class Robot(threading.Thread):
           pass
 
 class Chuntao(Robot):
-      def __init__(self, eyesUrl, feetUrl):
+      def __init__(self, eyesUrl, feetUrl, debug, show_contour, blink_time):
           self.eyes = Eyes(eyesUrl)
-          self.brain = Brain()
+          self.brain = Brain(debug, show_contour, blink_time)
           self.feet = WheelFeet(feetUrl)
           super(Chuntao, self).__init__()
  
@@ -59,14 +59,19 @@ class Chuntao(Robot):
           self._set_brain()
           print "brain"
 
-
-     
       def manualFeetControl(self, *par):
           self.brain.feetControl(*par)
 
 
 if __name__ == '__main__':
-   rob = Chuntao('http://192.168.1.219:8080/?action=stream','192.168.1.219')       
+   debug = False
+   blink_time = 1
+   show_contour = True
+   rob = Chuntao('http://192.168.1.238:8080/?action=stream',
+                 '192.168.1.238', 
+                 debug,
+                 show_contour,
+                 blink_time)       
    rob.start() 
 
    leave = True

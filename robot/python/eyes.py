@@ -17,6 +17,7 @@ class Eyes(threading.Thread):
           self.frameQueue = None
           self._needReset = False
           self._closeEyes = False
+          self._stop_capture = False
 
       def setFrameQueue(self, frameQueue):
           self.frameQueue = frameQueue
@@ -41,8 +42,10 @@ class Eyes(threading.Thread):
           self._needReset = False
 
       def _collectFrames(self):
-          if not self.frameQueue.isFull():
-             self.frameQueue.put( self._captureFrame() )
+          frame = self._captureFrame()
+          if not self.frameQueue.isFull() and frame:
+             #print "<<<<<",frame
+             self.frameQueue.put( frame )
 
       def _captureFrame(self):
           #_bytes = ''
@@ -59,6 +62,7 @@ class Eyes(threading.Thread):
                      return Frame(frame)
                except Exception as e:
                   print 'Can not capture frame: ',e
+                  return None
 
 class Frame:
       def __init__(self, frame):

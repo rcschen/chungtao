@@ -20,7 +20,8 @@ class SimpleQueue:
  
       def get(self):
           if not self._q.empty():
-             return self._q.get()
+             item = self._q.get()
+             return item
           else:
              return None
 

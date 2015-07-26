@@ -9,13 +9,13 @@ class Move:
           self._connection.changeRestServer( changedAddr )
        
       def stop(self):
-          self._cmd = '/arduino/stop'
+          self._cmd = '/arduino/stop/usless'
  
-      def fullfw(self):
-          self._cmd = '/arduino/fullfw'
+      def fullfw(self, factor = 0.8):
+          self._cmd = '/arduino/fullfw/'+str(factor)
         
       def back(self):
-          self._cmd = '/arduino/back'
+          self._cmd = '/arduino/back/usless'
 
       def right(self, factor=0.8):
           self._cmd = '/arduino/turnright/'+str(factor)
@@ -26,6 +26,6 @@ class Move:
       def sendResponse(self, cmd = None):
           if cmd:
              self._cmd = cmd
-          print self._cmd
+          #print self._cmd
           self._connection.sendResponse(self._cmd) 
  
