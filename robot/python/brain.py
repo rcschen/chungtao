@@ -130,11 +130,11 @@ class Contours:
 
       def generateMovingPar(self):
           way = self._mid - self._finalPosition
-          way_percent = math.fabs(way/float(self._weight))
+          way_percent = (1.0 -  math.fabs(way/float(self._weight)))
           print way
           if math.fabs(way) <= self._forwardMargen:
              print "forward>>>"
-             self._movingPar = ('fullfw', 1)
+             self._movingPar = ('fullfw', 0.4)
           elif way > self._forwardMargen:
              self._movingPar = ('left', way_percent)
              print "left>>>>",way_percent

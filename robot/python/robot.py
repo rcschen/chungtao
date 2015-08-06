@@ -31,7 +31,7 @@ class Robot(threading.Thread):
 
 class Chuntao(Robot):
       def __init__(self, eyesUrl, feetUrl, debug, show_contour, blink_time):
-          self.eyes = Eyes(eyesUrl)
+          self.eyes = Eyes(eyesUrl,debug)
           self.brain = Brain(debug, show_contour, blink_time)
           self.feet = WheelFeet(feetUrl)
           super(Chuntao, self).__init__()
@@ -67,8 +67,8 @@ if __name__ == '__main__':
    debug = False
    blink_time = 1
    show_contour = True
-   rob = Chuntao('http://192.168.1.238:8080/?action=stream',
-                 '192.168.1.238', 
+   rob = Chuntao('http://192.168.2.106:8080/?action=stream',
+                 '192.168.2.106', 
                  debug,
                  show_contour,
                  blink_time)       
@@ -83,10 +83,10 @@ if __name__ == '__main__':
             rob.manualFeetControl('stop')
          elif control == "d":
             print "right"
-            rob.manualFeetControl('right',0.8)
+            rob.manualFeetControl('right',0.2)
          elif control == "a":
             print "left"
-            rob.manualFeetControl('left',0.8)
+            rob.manualFeetControl('left',0.2)
          elif control == "w":
             print "fullfw"
             rob.manualFeetControl('fullfw')

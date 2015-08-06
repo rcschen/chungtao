@@ -6,7 +6,7 @@ import time
 import imgprocess
 
 class Eyes(threading.Thread):
-      def __init__(self, videoUrl):
+      def __init__(self, videoUrl, debug):
           super(Eyes,  self ).__init__(name = "Eyes")
           try:
             self._video = urllib.urlopen(videoUrl)
@@ -18,12 +18,13 @@ class Eyes(threading.Thread):
           self._needReset = False
           self._closeEyes = False
           self._stop_capture = False
+          self._debug = debug
 
       def setFrameQueue(self, frameQueue):
           self.frameQueue = frameQueue
 
       def run(self):
-          while True:
+          while not self._debug:
               if not self._needReset or not self._closeEyes:
                  self._collectFrames()
 
