@@ -27,7 +27,7 @@ class Brain(threading.Thread):
              time_diff = diff/TIME_UNIT
              if time_diff >= self._kickstart.blinkTime:
                 self._last_time = updatedTime
-                if self._kickstart.manualMode  and frame:
+                if not self._kickstart.manualMode  and frame:
                    self._wayToGoBydrawContours(frame)             
              
       def _getFrame(self):
@@ -124,9 +124,11 @@ class Contours:
                        break
                     h_anchor = h_anchor - 1
           sorted_position = sorted( high_set, key = lambda x:x[1] )
+          save_high = (1-self._saveMargin)*self._high
+          print "!!!!save---->",save_high
           self._candidatePosition = [ p[0] for p in sorted_position 
                                            if p[1] == sorted_position[1][1] 
-                                           and p[1] >= self._saveMargin ]
+                                           and p[1] <= save_high ]
          
       def findNearestPosition(self):
           candWithDistFromMid = []
@@ -141,7 +143,7 @@ class Contours:
       def generateMovingPar(self):
           if not self._finalPosition:
              print "circualright>>>"
-             self._movingPar = ('rotateright', 0.4)
+             self._movingPar = ('rotateright', 0.5)
              return 
 
           way = self._mid - self._finalPosition

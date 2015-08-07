@@ -7,6 +7,7 @@ class RestClient:
           self.changeRestServer( restServerAddr )
 
       def changeRestServer(self, changedAddr ):
+          #print changedAddr
           self._connection = httplib.HTTPConnection( changedAddr )
           return self
 

@@ -31,10 +31,7 @@ class Robot(threading.Thread):
 
 class Chuntao(Robot):
       def __init__(self, kickstart):
-          print "!!!!!", kickstart
           self.eyes = Eyes(kickstart)
-          print "????" 
- 
           self.brain = Brain(kickstart)
           self.feet = WheelFeet(kickstart)
           super(Chuntao, self).__init__()

@@ -14,4 +14,14 @@ class KickStart:
           self.manualMode         = boolTrans.get(cfg.getVal('ROBOTMODE','MANUAL'), False)
           self.shouldShowContour  = boolTrans.get(cfg.getVal('ROBOTMODE','SHOWCONTOUR'), False)
           self.blinkTime          = float( cfg.getVal('DURATION' ,'BLINKTIME') )
+          self.showInfo()
 
+      def showInfo(self):
+          print "-----------robot-----------"
+          print 'Robot address:            ', self.robotIP 
+          print 'Robot Video Stream Url:   ', self.streamAddress
+          print 'Eye should collect frame: ', self.shouldCollectFrame
+          print 'Feet should be executed:  ', self.shouldRunFeet
+          print 'Manual mode:              ', self.manualMode
+          print 'Contour should be shown:  ', self.shouldShowContour
+          print 'blinkTime:                ', self.blinkTime

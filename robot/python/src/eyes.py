@@ -8,17 +8,21 @@ import imgprocess
 class Eyes(threading.Thread):
       def __init__(self, kickstart):
           super(Eyes,  self ).__init__(name = "Eyes")
+          self._kickstart = kickstart
+
           try:
             if self._kickstart.shouldCollectFrame:
-               self._video = urllib.urlopen(kickstart.streamAddress)
+               self._video = urllib.urlopen(self._kickstart.streamAddress)
             else:
+               print 'Video connection is None'
                self._video = None
           except Exception as e:
-            print 'Can not connect to video url: ', e
+             #print 'Can not connect to video url: ', e
+             pass
+
           self._bytes = ''
           self.frameSize = 1024
           self.frameQueue = None
-          self._kickstart = kickstart
 
       def setFrameQueue(self, frameQueue):
           self.frameQueue = frameQueue
