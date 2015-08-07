@@ -58,8 +58,9 @@ class Brain(threading.Thread):
 
 class Contours:
       def __init__(self, frame):
-          self._forwardMargen = FORWARD_MARGEN
-          self._centralMargen = CENTRAL_MARGEN
+          self._forwardMargin = FORWARD_MARGIN
+          self._centralMargin = CENTRAL_MARGIN
+          self._saveMargin = SAVE_MARGIN
           self._frame = frame
           self._steps = []
           self._return = None
@@ -107,7 +108,7 @@ class Contours:
              self._steps.remove('findNearestPosition')
 
       def isOnTheWay(self):
-          if len([ p for p in self._bottonLine if math.fabs( p - self._mid ) < self._centralMargen ]) == 0 :
+          if len([ p for p in self._bottonLine if math.fabs( p - self._mid ) < self._centralMargin ]) == 0 :
              self._candidatePosition = self._bottonLine
              self._steps.remove('getFarthestPosition')
 
@@ -125,7 +126,7 @@ class Contours:
           sorted_position = sorted( high_set, key = lambda x:x[1] )
           self._candidatePosition = [ p[0] for p in sorted_position 
                                            if p[1] == sorted_position[1][1] 
-                                           and p[1] >= self._saveMargen ]
+                                           and p[1] >= self._saveMargin ]
          
       def findNearestPosition(self):
           candWithDistFromMid = []
@@ -145,17 +146,17 @@ class Contours:
 
           way = self._mid - self._finalPosition
           way_percent = (1.0 -  math.fabs(way/float(self._weight)))
-          if math.fabs(way) <= self._forwardMargen:
+          if math.fabs(way) <= self._forwardMargin:
              print "forward>>>"
              self._movingPar = ('fullfw', 0.4)
              return
 
-          elif way > self._forwardMargen:
+          elif way > self._forwardMargin:
              self._movingPar = ('left', way_percent)
              print "left>>>>",way_percent
              return
 
-          elif way < -self._forwardMargen:
+          elif way < -self._forwardMargin:
              self._movingPar = ('right', way_percent)
              print "right>>>",way_percent
              return 
