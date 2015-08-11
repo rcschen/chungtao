@@ -29,6 +29,12 @@ class Move:
       def rotateleft(self, factor=0.8):
           self._cmd = '/arduino/rotateleft/'+str(factor)
 
+      def stepright(self, factor=0.8):
+          self._cmd = '/arduino/stepright/'+str(factor)
+
+      def stepleft(self, factor=0.8):
+          self._cmd = '/arduino/stepleft/'+str(factor)
+
       def sendResponse(self, cmd = None):
           if cmd:
              self._cmd = cmd

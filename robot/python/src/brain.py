@@ -78,7 +78,7 @@ class Contours:
 
       def runSteps(self):
           for step in self._steps:
-              print ">>>>",step
+              #print ">>>>",step
               if self._breakStepRun:
                  break
               getattr(self,step)()          
@@ -115,6 +115,8 @@ class Contours:
       def getFarthestPosition(self):
           high_set = []
           contourImg = self._contour.frame
+          self._candidatePosition = []
+
           for p in self._bottonLine:
               h_anchor = self._high - 6
               while not h_anchor < 0:
@@ -123,12 +125,14 @@ class Contours:
                        high_set.append((p, h_anchor))
                        break
                     h_anchor = h_anchor - 1
-          sorted_position = sorted( high_set, key = lambda x:x[1] )
-          save_high = (1-self._saveMargin)*self._high
-          print "!!!!save---->",save_high
-          self._candidatePosition = [ p[0] for p in sorted_position 
-                                           if p[1] == sorted_position[1][1] 
-                                           and p[1] <= save_high ]
+          if len(high_set)  > 0:
+             sorted_position = sorted( high_set, key = lambda x:x[1] )
+             save_high = (1-self._saveMargin)*self._high        
+             _candidate = [ p for p in sorted_position 
+                              if p[1] == sorted_position[1][1] 
+                              and p[1] <= save_high ]
+             #print _candidate
+             self._candidatePosition = [p[0] for p in _candidate]
          
       def findNearestPosition(self):
           candWithDistFromMid = []
@@ -142,23 +146,26 @@ class Contours:
 
       def generateMovingPar(self):
           if not self._finalPosition:
+             self._movingPar = ('stepright', 0.6)
              print "circualright>>>"
-             self._movingPar = ('rotateright', 0.5)
              return 
 
           way = self._mid - self._finalPosition
-          way_percent = (1.0 -  math.fabs(way/float(self._weight)))
+          dis_percent = math.fabs(way/float(self._weight))
+          way_percent = (1.0 -  dis_percent)
           if math.fabs(way) <= self._forwardMargin:
              print "forward>>>"
-             self._movingPar = ('fullfw', 0.4)
+             self._movingPar = ('fullfw', 0.8)
              return
 
           elif way > self._forwardMargin:
              self._movingPar = ('left', way_percent)
-             print "left>>>>",way_percent
+             self._movingPar = ('stepleft', 0.3)
+             print "step left>>>>",way_percent
              return
 
           elif way < -self._forwardMargin:
              self._movingPar = ('right', way_percent)
-             print "right>>>",way_percent
+             #self._movingPar = ('stepright', 0.3)
+             print "step right>>>",way_percent
              return 

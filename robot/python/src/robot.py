@@ -65,7 +65,8 @@ class Chuntao(Robot):
 
 import kickstart
 if __name__ == '__main__':
-   rob = Chuntao(kickstart.KickStart())       
+   ks = kickstart.KickStart()
+   rob = Chuntao(ks)       
    rob.start() 
 
    leave = True
@@ -74,7 +75,10 @@ if __name__ == '__main__':
       try:
          if control == "s":
             print "stop"
+            #ks.shouldCollectFrame = False
             rob.manualFeetControl('stop')
+            ks.shouldRunFeet = False
+             
          elif control == "d":
             print "right"
             rob.manualFeetControl('right',0.2)
@@ -83,6 +87,7 @@ if __name__ == '__main__':
             rob.manualFeetControl('left',0.2)
          elif control == "w":
             print "fullfw"
+            ks.shouldRunFeet = True 
             rob.manualFeetControl('fullfw')
          elif control == "x":
             print "back"
