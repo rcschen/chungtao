@@ -53,6 +53,10 @@ void receiveEvent(int howMany)
 // Function to command a given motor of the robot
 void send_motor_command(int speed_pin, int direction_pin, int pwm, boolean dir)
 {
+    Serial.print(pwm);
+    Serial.print(",");
+    Serial.print(dir);
+    Serial.println("--------");
     analogWrite(speed_pin,pwm); // Set PWM control, 0 for stop, and 255 for maximum speed
     digitalWrite(direction_pin,dir);
 }

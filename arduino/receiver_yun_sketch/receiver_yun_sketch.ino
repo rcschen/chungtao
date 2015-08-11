@@ -48,6 +48,12 @@ void process(YunClient restClient) {
      else if(command == "stop") {
          getStop(restClient);
      }
+     else if (command == "rotateright") {
+         rotateRight(restClient);
+     }
+     else if (command == "rotateleft") {
+         rotateLeft(restClient);
+     }
      else {
          Serial.println("Command Not Found:" + command);
      }
@@ -60,13 +66,13 @@ void sendControl(int control[]) {
     Serial.print(control[2]);
     Serial.println(control[3]);
     Serial.println("-------------");
-    Wire.write(control[0]);
-    Wire.write(",");
     Wire.write(control[1]);
     Wire.write(",");
-    Wire.write(control[2]);
+    Wire.write(control[0]);
     Wire.write(",");
     Wire.write(control[3]);
+    Wire.write(",");
+    Wire.write(control[2]);
    Wire.endTransmission();
 }
 
@@ -97,9 +103,9 @@ void turnRight(YunClient client){
     float factor = para.toFloat();
     int control[4];
     control[0] = 1;
-    control[1] = fullFactorValue*factor ;
+    control[1] = fullFactorValue;
     control[2] = 0;
-    control[3] = fullFactorValue;
+    control[3] = fullFactorValue*factor;
     sendControl(control);
 }
 
@@ -108,12 +114,31 @@ void turnLeft(YunClient client) {
     float factor = para.toFloat();
     int control[4];
     control[0] = 1;
-    control[1] = fullFactorValue;
+    control[1] = fullFactorValue*factor;
+    control[2] = 0;
+    control[3] = fullFactorValue;
+    sendControl(control);
+}
+void rotateLeft(YunClient client) {
+    String para = client.readStringUntil('\n');
+    float factor = para.toFloat();
+    int control[4];
+    control[0] = 1;
+    control[1] = fullFactorValue*factor;
+    control[2] = 1;
+    control[3] = fullFactorValue*factor;
+    sendControl(control);
+}
+void rotateRight(YunClient client) {
+    String para = client.readStringUntil('\n');
+    float factor = para.toFloat();
+    int control[4];
+    control[0] = 0;
+    control[1] = fullFactorValue*factor;
     control[2] = 0;
     control[3] = fullFactorValue*factor;
     sendControl(control);
 }
-
 void getStop (YunClient client) {
      String para = client.readStringUntil('\n');
     float factor = para.toFloat();
