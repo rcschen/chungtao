@@ -40,4 +40,11 @@ class Move:
              self._cmd = cmd
           #print self._cmd
           self._connection.sendResponse(self._cmd) 
- 
+     
+      def isEqualTo( move )
+          for attr in dir(move):
+              attrOnget = getattr(a, attr)
+              if not attrOnget.__class__ == types.MethodType:
+                 if not attrOnget == getattr(self, attr):
+                    return False
+          return True

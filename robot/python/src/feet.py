@@ -15,7 +15,8 @@ class Feet(threading.Thread):
 class WheelFeet(Feet):
       def __init__(self, kickstart):
           super(WheelFeet, self).__init__(kickstart)
-          
+          self._lastMove = None
+         
       def run(self):
           while True:
                 if self._kickstart.shouldRunFeet:
@@ -24,5 +25,7 @@ class WheelFeet(Feet):
       def _runFeetCommand(self):
           if not self.feetCommandQueue.isEmpty():
              move = self.feetCommandQueue.get()
-             move.setRobAddr(self._kickstart.robotIP)
-             move.sendResponse()
+             if not move.isEqualTo(self._lastMove):
+                move.setRobAddr(self._kickstart.robotIP)
+                move.sendResponse()
+                self._lastMove = move

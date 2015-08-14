@@ -58,9 +58,6 @@ class Brain(threading.Thread):
 
 class Contours:
       def __init__(self, frame):
-          self._forwardMargin = FORWARD_MARGIN
-          self._centralMargin = CENTRAL_MARGIN
-          self._saveMargin = SAVE_MARGIN
           self._frame = frame
           self._steps = []
           self._return = None
@@ -73,8 +70,9 @@ class Contours:
           self._bottonLine = []
           self._candidatePosition = []
           self._finalPosition = None
-          self._movingPar = ('stop')
+          self._movingPair = ('stop')
           self.setSteps()
+          self._highVariance = 0
 
       def runSteps(self):
           for step in self._steps:
@@ -82,7 +80,7 @@ class Contours:
               if self._breakStepRun:
                  break
               getattr(self,step)()          
-          return self._movingPar
+          return self._movingPair
 
       def setSteps(self):  
           self._steps = ['setupContour', 
@@ -108,7 +106,7 @@ class Contours:
              self._steps.remove('findNearestPosition')
 
       def isOnTheWay(self):
-          if len([ p for p in self._bottonLine if math.fabs( p - self._mid ) < self._centralMargin ]) == 0 :
+          if len([ p for p in self._bottonLine if math.fabs( p - self._mid ) < CENTRAL_MARGIN ]) == 0 :
              self._candidatePosition = self._bottonLine
              self._steps.remove('getFarthestPosition')
 
@@ -125,13 +123,14 @@ class Contours:
                        high_set.append((p, h_anchor))
                        break
                     h_anchor = h_anchor - 1
+
           if len(high_set)  > 0:
              sorted_position = sorted( high_set, key = lambda x:x[1] )
-             save_high = (1-self._saveMargin)*self._high        
+             save_high = ( 1-SAVE_MARGIN )*self._high        
              _candidate = [ p for p in sorted_position 
-                              if p[1] == sorted_position[1][1] 
+                              if p[1] == sorted_position[0][1] 
                               and p[1] <= save_high ]
-             #print _candidate
+             self._highVariance = sorted_position[-1][1] - sorted_position[0][1]
              self._candidatePosition = [p[0] for p in _candidate]
          
       def findNearestPosition(self):
@@ -145,27 +144,33 @@ class Contours:
              self._finalPosition = None
 
       def generateMovingPar(self):
-          if not self._finalPosition:
-             self._movingPar = ('stepright', 0.6)
-             print "circualright>>>"
-             return 
+          self._movingPair = MovingGenerator(self).generateMovingPar()
 
-          way = self._mid - self._finalPosition
-          dis_percent = math.fabs(way/float(self._weight))
-          way_percent = (1.0 -  dis_percent)
-          if math.fabs(way) <= self._forwardMargin:
+
+class MovingGenerator:
+      def __init__(contours):
+          self._contours = contours
+          self.way = contour._mid - contour._finalPosition
+          self.way_percent = ( 1.0 -  math.fabs(self.way/float(contour._weight)) )
+          self.high_variance_percent = float( contour._highVariance/contour._high )
+
+      def generateMovingPar(self):
+          if not self._contours._finalPosition:
+             print "stepright>>>"
+             return  ('stepright', 0.6)
+
+          elif self.high_variance_percent < HIGH_VARIANCE_MARGIN 
+               or math.fabs(self.way) <= FORWARD_MARGIN:
              print "forward>>>"
-             self._movingPar = ('fullfw', 0.8)
-             return
-
-          elif way > self._forwardMargin:
-             self._movingPar = ('left', way_percent)
-             self._movingPar = ('stepleft', 0.3)
+             return('fullfw', 0.8)
+            
+          elif self.way > FORWARD_MARGIN:
              print "step left>>>>",way_percent
-             return
+             return ('left', self.way_percent)
 
-          elif way < -self._forwardMargin:
-             self._movingPar = ('right', way_percent)
-             #self._movingPar = ('stepright', 0.3)
-             print "step right>>>",way_percent
-             return 
+          elif self.way < -FORWARD_MARGIN:
+             print "step right>>>",self.way_percent
+             return ('right', self.way_percent)
+
+
+
