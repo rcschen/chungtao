@@ -26,6 +26,7 @@ class WheelFeet(Feet):
           if not self.feetCommandQueue.isEmpty():
              move = self.feetCommandQueue.get()
              if not move.isEqualTo(self._lastMove):
+                print "Truelyyyyyyyyy sent >>>>>>>>"
                 move.setRobAddr(self._kickstart.robotIP)
                 move.sendResponse()
                 self._lastMove = move

@@ -91,7 +91,8 @@ class Contours:
                           'generateMovingPar']
 
       def setupContour(self):
-          self._contour = self._frame.applyProcessToFrame("drawContours", self._contourColor)
+          self._contour = self._frame.applyProcessToFrame("cannyEdge").applyProcessToFrame("drawContours", self._contourColor)
+
           self._high, self._weight, channels = self._contour.frame.shape 
           self._mid = self._weight/2           
 
@@ -126,13 +127,25 @@ class Contours:
 
           if len(high_set)  > 0:
              sorted_position = sorted( high_set, key = lambda x:x[1] )
-             save_high = ( 1-SAVE_MARGIN )*self._high        
+             print sorted_position
+             save_high = ( 1 - SAVE_MARGIN_PERCENT )*self._high        
              _candidate = [ p for p in sorted_position 
                               if p[1] == sorted_position[0][1] 
                               and p[1] <= save_high ]
              self._highVariance = sorted_position[-1][1] - sorted_position[0][1]
              self._candidatePosition = [p[0] for p in _candidate]
-         
+             #for debug
+             for p in _candidate:
+                 
+                 self._contour.frame[p[1]][p[0]] = (255,0,0)                 
+                 self._contour.frame[p[1]-1][p[0]] = (255,0,0)                 
+                 self._contour.frame[p[1]-2][p[0]] = (255,0,0)                 
+                 self._contour.frame[p[1]-3][p[0]] = (255,0,0)                 
+                 self._contour.frame[self._high-1][p[0]] = (255,0,0)                 
+                 self._contour.frame[self._high-2][p[0]] = (255,0,0)                 
+                 self._contour.frame[self._high-3][p[0]] = (255,0,0)                 
+                 self._contour.frame[self._high-4][p[0]] = (255,0,0)                 
+
       def findNearestPosition(self):
           candWithDistFromMid = []
           for p in self._candidatePosition:
@@ -148,29 +161,47 @@ class Contours:
 
 
 class MovingGenerator:
-      def __init__(contours):
+      def __init__(self,contours):
           self._contours = contours
-          self.way = contour._mid - contour._finalPosition
-          self.way_percent = ( 1.0 -  math.fabs(self.way/float(contour._weight)) )
-          self.high_variance_percent = float( contour._highVariance/contour._high )
+          self.way=0
+          if self._contours._finalPosition:
+             self.way = contours._mid - contours._finalPosition
+          self.way_percent = ( 1.0 -  math.fabs(self.way/float(contours._weight)) )
+          #print 'contours._highVariance:', contours._highVariance
+          #print 'contours._high:',contours._high
+          #print 'float( contours._highVariance/contours._high )', float( contours._highVariance)/contours._high
+          print "finalPosition.....", contours._finalPosition 
+          self.high_variance_percent = float( contours._highVariance) / contours._high 
 
       def generateMovingPar(self):
+          #print "-----hhh-->",self.high_variance_percent
           if not self._contours._finalPosition:
              print "stepright>>>"
              return  ('stepright', 0.6)
 
-          elif self.high_variance_percent < HIGH_VARIANCE_MARGIN 
+          elif self.high_variance_percent < HIGH_VARIANCE_MARGIN_PERCENT \
                or math.fabs(self.way) <= FORWARD_MARGIN:
              print "forward>>>"
              return('fullfw', 0.8)
             
           elif self.way > FORWARD_MARGIN:
-             print "step left>>>>",way_percent
-             return ('left', self.way_percent)
+             #print "??????", float( math.fabs(self.way)) / self._contours._mid
+             if ( float( math.fabs(self.way)) / self._contours._mid ) >= STEP_TURN_MARGIN_PERCENT:
+                print "step left>>>",self.way_percent
+                return ('stepleft', 0.5)
+             else: 
+                print "left>>>>",self.way_percent
+                return ('left', self.way_percent)
 
           elif self.way < -FORWARD_MARGIN:
-             print "step right>>>",self.way_percent
-             return ('right', self.way_percent)
+             #print "??????", float( math.fabs(self.way)) / self._contours._mid
+
+             if ( float( math.fabs(self.way)) / self._contours._mid ) >= STEP_TURN_MARGIN_PERCENT:
+                print "step right>>>",self.way_percent
+                return ('stepright', 0.5)
+             else: 
+                print "right>>>",self.way_percent
+                return ('right', self.way_percent)
 
 
 

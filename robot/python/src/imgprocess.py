@@ -65,7 +65,8 @@ def findContours(img):
     return image, contours, hierarchy
 
 def cannyEdge(img):
-    return cv2.Canny(img,100,200)
+    cv2.Canny(img,100,200)
+    return img
 
 def findContours(img):
     imgray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)

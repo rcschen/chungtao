@@ -1,4 +1,5 @@
 from restconnect import RestClient
+import types
 
 class Move:
       def __init__(self, robotAddress = 'arduino.chuntao'):
@@ -41,10 +42,23 @@ class Move:
           #print self._cmd
           self._connection.sendResponse(self._cmd) 
      
-      def isEqualTo( move )
+      def isEqualTo(self, move ):
+          '''
           for attr in dir(move):
-              attrOnget = getattr(a, attr)
-              if not attrOnget.__class__ == types.MethodType:
+              attrOnget = getattr(move, attr)
+              if not attrOnget.__class__ == types.MethodType \
+                 and not attrOnget.__class__ == types.InstanceType:
+                 print ">>>>> move >>", attrOnget
+                 print ">>>>> self >>", getattr(self, attr)
+                 print "=====result==",attrOnget == getattr(self, attr)
                  if not attrOnget == getattr(self, attr):
                     return False
           return True
+          '''
+            
+          if move and  move._cmd == self._cmd:
+             return True
+          return False
+
+
+
