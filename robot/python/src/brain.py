@@ -51,9 +51,9 @@ class Brain(threading.Thread):
           if not frame:
              print "No Frame"
              return
-          contours = Contours(frame)
-          self.feetControl(*contours.runSteps())
+          movingAlg = self._kickstart.movingAlg(frame)
+          self.feetControl(*movingAlg.runSteps())
           if self._kickstart.shouldShowContour:
-             contours._contour.showFrame()
+             movingAlg._contour.showFrame()
 
 

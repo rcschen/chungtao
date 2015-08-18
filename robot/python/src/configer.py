@@ -40,6 +40,11 @@ def initConfig(cfg):
        cfg.add_section('DURATION')
     cfg.set('DURATION', 'BLINKTIME', '1')
 
+    if not cfg.has_section('MOVINGALG'):
+       cfg.add_section('MOVINGALG')
+    cfg.set('MOVINGALG', 'MODULE', 'contours')
+    cfg.set('MOVINGALG', 'CLASS', 'ContoursFarthest')
+
     if not cfg.has_section('CONSTANTS'):
        cfg.add_section('CONSTANTS')
     cfg.set('CONSTANTS', 'TIME_UNIT', '1.7062')

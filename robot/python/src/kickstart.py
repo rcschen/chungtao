@@ -1,4 +1,5 @@
 import configer as cfg
+from importlib import import_module
 
 boolTrans = {'True': True, 'False':False}
 
@@ -13,7 +14,10 @@ class KickStart:
           self.shouldRunFeet      = boolTrans.get(cfg.getVal('ROBOTMODE','RUNFEET'), True)
           self.manualMode         = boolTrans.get(cfg.getVal('ROBOTMODE','MANUAL'), False)
           self.shouldShowContour  = boolTrans.get(cfg.getVal('ROBOTMODE','SHOWCONTOUR'), False)
-          self.blinkTime          = float( cfg.getVal('DURATION' ,'BLINKTIME') )
+          self.blinkTime          = float( cfg.getVal('DURATION' ,'BLINKTIME')) 
+          movingModule            = cfg.getVal('MOVINGALG', 'MODULE')
+          movingClass             = cfg.getVal('MOVINGALG', 'CLASS')
+          self.movingAlg          = getattr(import_module(movingModule), movingClass)
           self.showInfo()
 
       def showInfo(self):
