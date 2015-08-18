@@ -24,7 +24,7 @@ class Brain(threading.Thread):
           while True:
              diff, updatedTime = util.get_diff_timestamp( self._last_time )
              frame = self._getFrame()
-             time_diff = diff/TIME_UNIT
+             time_diff = diff/c.TIME_UNIT
              if time_diff >= self._kickstart.blinkTime:
                 self._last_time = updatedTime
                 if not self._kickstart.manualMode  and frame:
@@ -91,7 +91,8 @@ class Contours:
                           'generateMovingPar']
 
       def setupContour(self):
-          self._contour = self._frame.applyProcessToFrame("cannyEdge").applyProcessToFrame("drawContours", self._contourColor)
+          #self._contour = self._frame.applyProcessToFrame("cannyEdge").applyProcessToFrame("drawContours", self._contourColor)
+          self._contour = self._frame.applyProcessToFrame("drawContours", self._contourColor)
 
           self._high, self._weight, channels = self._contour.frame.shape 
           self._mid = self._weight/2           
@@ -107,7 +108,7 @@ class Contours:
              self._steps.remove('findNearestPosition')
 
       def isOnTheWay(self):
-          if len([ p for p in self._bottonLine if math.fabs( p - self._mid ) < CENTRAL_MARGIN ]) == 0 :
+          if len([ p for p in self._bottonLine if math.fabs( p - self._mid ) < c.CENTRAL_MARGIN ]) == 0 :
              self._candidatePosition = self._bottonLine
              self._steps.remove('getFarthestPosition')
 
@@ -128,7 +129,7 @@ class Contours:
           if len(high_set)  > 0:
              sorted_position = sorted( high_set, key = lambda x:x[1] )
              print sorted_position
-             save_high = ( 1 - SAVE_MARGIN_PERCENT )*self._high        
+             save_high = ( 1 - c.SAVE_MARGIN_PERCENT )*self._high        
              _candidate = [ p for p in sorted_position 
                               if p[1] == sorted_position[0][1] 
                               and p[1] <= save_high ]
@@ -179,24 +180,24 @@ class MovingGenerator:
              print "stepright>>>"
              return  ('stepright', 0.6)
 
-          elif self.high_variance_percent < HIGH_VARIANCE_MARGIN_PERCENT \
-               or math.fabs(self.way) <= FORWARD_MARGIN:
+          elif self.high_variance_percent < c.HIGH_VARIANCE_MARGIN_PERCENT \
+               or math.fabs(self.way) <= c.FORWARD_MARGIN:
              print "forward>>>"
              return('fullfw', 0.8)
             
-          elif self.way > FORWARD_MARGIN:
+          elif self.way > c.FORWARD_MARGIN:
              #print "??????", float( math.fabs(self.way)) / self._contours._mid
-             if ( float( math.fabs(self.way)) / self._contours._mid ) >= STEP_TURN_MARGIN_PERCENT:
+             if ( float( math.fabs(self.way)) / self._contours._mid ) >= c.STEP_TURN_MARGIN_PERCENT:
                 print "step left>>>",self.way_percent
                 return ('stepleft', 0.5)
              else: 
                 print "left>>>>",self.way_percent
                 return ('left', self.way_percent)
 
-          elif self.way < -FORWARD_MARGIN:
+          elif self.way < - c.FORWARD_MARGIN:
              #print "??????", float( math.fabs(self.way)) / self._contours._mid
 
-             if ( float( math.fabs(self.way)) / self._contours._mid ) >= STEP_TURN_MARGIN_PERCENT:
+             if ( float( math.fabs(self.way)) / self._contours._mid ) >= c.STEP_TURN_MARGIN_PERCENT:
                 print "step right>>>",self.way_percent
                 return ('stepright', 0.5)
              else: 
