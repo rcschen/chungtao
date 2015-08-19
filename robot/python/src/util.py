@@ -15,13 +15,14 @@ def get_diff_timestamp(lastTimestamp):
     nowSecond = datetime.datetime.fromtimestamp( nowTimestamp ).second
     lastSecond = datetime.datetime.fromtimestamp( lastTimestamp ).second
     diff = nowTimestamp - lastTimestamp
+    '''
+    if lastSecond > nowSecond:
+       nowSecond += 60
+    duration = nowSecond - lastSecond
 
-    #if lastSecond > nowSecond:
-       #nowSecond += 60
-    #duration = nowSecond - lastSecond
-
-    #if duration == 1:
-       #print diff       
-       #print "duration:", duration
+    if duration == 1:
+       print diff       
+       print "duration:", duration
+    '''
     return diff, nowTimestamp
 

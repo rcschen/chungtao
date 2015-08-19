@@ -1,5 +1,8 @@
+import math
+from constants import c
+
 class ContourBase(object):
-      def __init(self, frame):
+      def __init__(self, frame):
           self._frame = frame
           self._steps = []
           self._return = None
@@ -43,14 +46,13 @@ class ContoursFarthest(ContourBase):
 
       def setupContour(self):
           self._contour = self._frame.applyProcessToFrame("drawContours", self._contourColor)
-
           self._high, self._weight, channels = self._contour.frame.shape 
           self._mid = self._weight/2           
 
       def findButtonLine(self):
           contourImg = self._contour.frame
           for w in range(self._weight):
-              if list(contourImg[self._high-1][w]) == list(self._contourColor):
+              if list(contourImg[self._high-2][w]) == list(self._contourColor):
                  self._bottonLine.append(w)
           if len(self._bottonLine) == 0:
              self._steps.remove('isOnTheWay') 
@@ -68,9 +70,9 @@ class ContoursFarthest(ContourBase):
           self._candidatePosition = []
 
           for p in self._bottonLine:
-              h_anchor = self._high - 6
+              h_anchor = self._high - 2
               while not h_anchor < 0:
-                    if list(contourImg[h_anchor][p]) == list(self._contourColor) or h_anchor == 0 :
+                    if not list(contourImg[h_anchor][p]) == list(self._contourColor) or h_anchor == 0 :
                        #print "BBBBBBBBBb",(p, h_anchor)
                        high_set.append((p, h_anchor))
                        break
@@ -78,7 +80,7 @@ class ContoursFarthest(ContourBase):
 
           if len(high_set)  > 0:
              sorted_position = sorted( high_set, key = lambda x:x[1] )
-             print sorted_position
+             #print sorted_position
              save_high = ( 1 - c.SAVE_MARGIN_PERCENT )*self._high        
              _candidate = [ p for p in sorted_position 
                               if p[1] == sorted_position[0][1] 

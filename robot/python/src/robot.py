@@ -66,7 +66,7 @@ class Chuntao(Robot):
 import kickstart
 if __name__ == '__main__':
    ks = kickstart.KickStart()
-   rob = Chuntao(ks)       
+   rob = Chuntao(ks)      
    rob.start() 
 
    leave = True

@@ -76,5 +76,5 @@ def findContours(img):
 
 def drawContours(img, contourColor = (0,255,0)):
     contours = findContours(img)
-    cv2.drawContours(img, contours, -1, contourColor, 3)
+    cv2.drawContours(img, contours, -1, contourColor, -1)
     return img

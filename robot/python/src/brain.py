@@ -34,6 +34,7 @@ class Brain(threading.Thread):
           if not self.frameQueue.isEmpty():
              item = self.frameQueue.get()
              return item
+
           return None
               
       def feetControl(self, *par):
