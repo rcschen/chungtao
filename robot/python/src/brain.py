@@ -99,7 +99,7 @@ class Contours:
       def findButtonLine(self):
           contourImg = self._contour.frame
           for w in range(self._weight):
-              if list(contourImg[self._high-1][w]) == list(self._contourColor):
+              if list(contourImg[self._high-2][w]) == list(self._contourColor):
                  self._bottonLine.append(w)
           if len(self._bottonLine) == 0:
              self._steps.remove('isOnTheWay') 
@@ -115,11 +115,10 @@ class Contours:
           high_set = []
           contourImg = self._contour.frame
           self._candidatePosition = []
-
           for p in self._bottonLine:
-              h_anchor = self._high - 6
+              h_anchor = self._high - 2 #originally is 6
               while not h_anchor < 0:
-                    if list(contourImg[h_anchor][p]) == list(self._contourColor) or h_anchor == 0 :
+                    if not list(contourImg[h_anchor][p]) == list(self._contourColor) or h_anchor == 0 :
                        #print "BBBBBBBBBb",(p, h_anchor)
                        high_set.append((p, h_anchor))
                        break
@@ -127,7 +126,7 @@ class Contours:
 
           if len(high_set)  > 0:
              sorted_position = sorted( high_set, key = lambda x:x[1] )
-             print sorted_position
+             #print sorted_position
              save_high = ( 1 - SAVE_MARGIN_PERCENT )*self._high        
              _candidate = [ p for p in sorted_position 
                               if p[1] == sorted_position[0][1] 
@@ -140,11 +139,17 @@ class Contours:
                  self._contour.frame[p[1]][p[0]] = (255,0,0)                 
                  self._contour.frame[p[1]-1][p[0]] = (255,0,0)                 
                  self._contour.frame[p[1]-2][p[0]] = (255,0,0)                 
-                 self._contour.frame[p[1]-3][p[0]] = (255,0,0)                 
+                 self._contour.frame[p[1]-3][p[0]] = (255,0,0)                
+                 self._contour.frame[p[1]-4][p[0]] = (255,0,0)                 
+                 self._contour.frame[p[1]-5][p[0]] = (255,0,0)                 
+
                  self._contour.frame[self._high-1][p[0]] = (255,0,0)                 
                  self._contour.frame[self._high-2][p[0]] = (255,0,0)                 
                  self._contour.frame[self._high-3][p[0]] = (255,0,0)                 
                  self._contour.frame[self._high-4][p[0]] = (255,0,0)                 
+                 self._contour.frame[self._high-5][p[0]] = (255,0,0)                 
+                 self._contour.frame[self._high-6][p[0]] = (255,0,0)                 
+                 self._contour.frame[self._high-7][p[0]] = (255,0,0)                 
 
       def findNearestPosition(self):
           candWithDistFromMid = []
@@ -170,14 +175,14 @@ class MovingGenerator:
           #print 'contours._highVariance:', contours._highVariance
           #print 'contours._high:',contours._high
           #print 'float( contours._highVariance/contours._high )', float( contours._highVariance)/contours._high
-          print "finalPosition.....", contours._finalPosition 
+          #print "finalPosition.....", contours._finalPosition 
           self.high_variance_percent = float( contours._highVariance) / contours._high 
 
       def generateMovingPar(self):
           #print "-----hhh-->",self.high_variance_percent
           if not self._contours._finalPosition:
              print "stepright>>>"
-             return  ('stepright', 0.6)
+             return  ('stepright', 0.5)
 
           elif self.high_variance_percent < HIGH_VARIANCE_MARGIN_PERCENT \
                or math.fabs(self.way) <= FORWARD_MARGIN:
