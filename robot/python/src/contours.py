@@ -13,6 +13,10 @@ class ContourBase(object):
           self._weight = 0
           self._mid = 0
           self._breakStepRun = False
+          self._bottonLine = []
+          self._candidatePosition = []
+          self._finalPosition = None
+ 
           self.setSteps()
 
       def runSteps(self):
@@ -26,13 +30,80 @@ class ContourBase(object):
       def setSteps(self):
           print "Not implement"
 
+      def setupContour(self):
+          self._contour = self._frame.applyProcessToFrame("drawContours", self._contourColor)
+          self._high, self._weight, channels = self._contour.frame.shape 
+          self._mid = self._weight/2           
+
+      def findNearestPosition(self):
+          candWithDistFromMid = []
+          for p in self._candidatePosition:
+              candWithDistFromMid.append((p, math.fabs( p - self._mid)))
+          sorted_position = sorted( candWithDistFromMid, key = lambda x:x[1] )
+          if len(sorted_position) > 0:
+             self._finalPosition = sorted_position[0][0]
+          else:
+             self._finalPosition = None
+
+class ContoursForwardFirst(ContourBase):
+      def __init__(self, frame):
+          super(ContoursFarthest, self).__init__(frame)
+          self._forwardFlage = True
+
+      def setSteps(self):
+          self._steps =[]
+ 
+      def findButtonLine(self):
+          contourImg = self._contour.frame
+          for w in range(self._weight):
+              if list(contourImg[self._high-2][w]) == list(self._contourColor):
+                 self._bottonLine.append(w)
+          '''
+          if len(self._bottonLine) == 0:
+             self._steps.remove('isOnTheWay') 
+             self._steps.remove('getFarthestPosition')
+             self._steps.remove('findNearestPosition')
+          '''
+      
+      def getFarthestPosition(self):
+          high_set = []
+          centrolPositionForward = []
+          contourImg = self._contour.frame
+          self._candidatePosition = []
+
+          for p in self._bottonLine:
+              h_anchor = self._high - 2
+              while not h_anchor < 0:
+                    if not list(contourImg[h_anchor][p]) == list(self._contourColor) or h_anchor == 0 :
+                       #print "BBBBBBBBBb",(p, h_anchor)
+                       high_set.append((p, h_anchor))
+                       break
+                    h_anchor = h_anchor - 1
+             if math.fabs( p-self._mid ) <= c.FORWARD_MARGIN and float( self._high - h_anchor )/self._high < c.SAVE_MARGIN_PERCENT:
+                centrolPositionForward.append((p, h_anchor))
+          if len(centrolPositionForward) > 0:
+             sorted_position =  sorted(centrolPositionForward, key = lambda x:x[1])
+          else:
+             sorted_position = sorted(high_set, key = lambda x:x[1])
+             self._forwardFlage = False
+
+           _candidate = [ p for p in sorted_position if p[1] == sorted_position[0][1] ]
+           self._candidatePosition = [p[0] for p in _candidate]
+           #for debug
+           for p in _candidate:
+                 
+               self._contour.frame[p[1]][p[0]] = (255,0,0)                 
+               self._contour.frame[p[1]-1][p[0]] = (255,0,0)                 
+               self._contour.frame[p[1]-2][p[0]] = (255,0,0)                 
+               self._contour.frame[p[1]-3][p[0]] = (255,0,0)                 
+               self._contour.frame[self._high-1][p[0]] = (255,0,0)                 
+               self._contour.frame[self._high-2][p[0]] = (255,0,0)                 
+               self._contour.frame[self._high-3][p[0]] = (255,0,0)                 
+               self._contour.frame[self._high-4][p[0]] = (255,0,0)                 
 
 class ContoursFarthest(ContourBase):
       def __init__(self, frame):
           super(ContoursFarthest, self).__init__(frame)
-          self._bottonLine = []
-          self._candidatePosition = []
-          self._finalPosition = None
           self._highVariance = 0
 
 
@@ -44,10 +115,6 @@ class ContoursFarthest(ContourBase):
                           'findNearestPosition',
                           'generateMovingPar']
 
-      def setupContour(self):
-          self._contour = self._frame.applyProcessToFrame("drawContours", self._contourColor)
-          self._high, self._weight, channels = self._contour.frame.shape 
-          self._mid = self._weight/2           
 
       def findButtonLine(self):
           contourImg = self._contour.frame
@@ -99,15 +166,6 @@ class ContoursFarthest(ContourBase):
                  self._contour.frame[self._high-3][p[0]] = (255,0,0)                 
                  self._contour.frame[self._high-4][p[0]] = (255,0,0)                 
 
-      def findNearestPosition(self):
-          candWithDistFromMid = []
-          for p in self._candidatePosition:
-              candWithDistFromMid.append((p, math.fabs( p - self._mid)))
-          sorted_position = sorted( candWithDistFromMid, key = lambda x:x[1] )
-          if len(sorted_position) > 0:
-             self._finalPosition = sorted_position[0][0]
-          else:
-             self._finalPosition = None
 
       def generateMovingPar(self):
           self._movingPair = MovingGenerator(self).generateMovingPar()
