@@ -49,14 +49,12 @@ def initConfig(cfg):
        cfg.add_section('CONSTANTS')
     cfg.set('CONSTANTS', 'TIME_UNIT', '1.7062')
     cfg.set('CONSTANTS', 'FORWARD_MARGIN', '5')
+    cfg.set('CONSTANTS', 'MOVEON_MARGIN', '10')
     cfg.set('CONSTANTS', 'CENTRAL_MARGIN', '100000')
     cfg.set('CONSTANTS', 'SAVE_MARGIN_PERCENT', '0.1')
     cfg.set('CONSTANTS', 'TURN_STEP_TIME', '2')
     cfg.set('CONSTANTS', 'HIGH_VARIANCE_MARGIN_PERCENT', '0.1')
     cfg.set('CONSTANTS', 'STEP_TURN_MARGIN_PERCENT', '0.85')
-
-
-
 
 @fileLoad('r')
 def getVal(cfg, sec, opt):

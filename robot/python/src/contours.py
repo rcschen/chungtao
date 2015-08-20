@@ -58,12 +58,6 @@ class ContoursForwardFirst(ContourBase):
           for w in range(self._weight):
               if list(contourImg[self._high-2][w]) == list(self._contourColor):
                  self._bottonLine.append(w)
-          '''
-          if len(self._bottonLine) == 0:
-             self._steps.remove('isOnTheWay') 
-             self._steps.remove('getFarthestPosition')
-             self._steps.remove('findNearestPosition')
-          '''
       
       def getFarthestPosition(self):
           high_set = []
@@ -79,7 +73,8 @@ class ContoursForwardFirst(ContourBase):
                        high_set.append((p, h_anchor))
                        break
                     h_anchor = h_anchor - 1
-             if math.fabs( p-self._mid ) <= c.FORWARD_MARGIN and float( self._high - h_anchor )/self._high < c.SAVE_MARGIN_PERCENT:
+             if math.fabs( p-self._mid ) <= c.MOVEON_MARGIN and \
+                float( self._high - h_anchor )/self._high < c.SAVE_MARGIN_PERCENT:
                 centrolPositionForward.append((p, h_anchor))
           if len(centrolPositionForward) > 0:
              sorted_position =  sorted(centrolPositionForward, key = lambda x:x[1])
@@ -100,6 +95,9 @@ class ContoursForwardFirst(ContourBase):
                self._contour.frame[self._high-2][p[0]] = (255,0,0)                 
                self._contour.frame[self._high-3][p[0]] = (255,0,0)                 
                self._contour.frame[self._high-4][p[0]] = (255,0,0)                 
+
+      def generateMovingPar(self):
+          self._movingPair = MovingGeneratorForwardFirst(self).generateMovingPar(self._forwardFlage)
 
 class ContoursFarthest(ContourBase):
       def __init__(self, frame):
@@ -184,7 +182,7 @@ class MovingGenerator:
           print "finalPosition.....", contours._finalPosition 
           self.high_variance_percent = float( contours._highVariance) / contours._high 
 
-      def generateMovingPar(self):
+      def generateMovingPar(self ):
           #print "-----hhh-->",self.high_variance_percent
           if not self._contours._finalPosition:
              print "stepright>>>"
@@ -215,4 +213,41 @@ class MovingGenerator:
                 return ('right', self.way_percent)
 
 
+class MovingGeneratorForwardFirst:
+      def __init__(self,contours):
+          self._contours = contours
+          self.way = 0
+          if self._contours._finalPosition:
+             self.way = contours._mid - contours._finalPosition
+          self.way_percent = ( 1.0 -  math.fabs(self.way/float(contours._weight)) )
+
+      def generateMovingPar(self, forwardFlage = None ):
+          if not self._contours._finalPosition:
+             print "stepright>>>"
+             return  ('stepright', 0.6)
+
+          if forwardFlage and math.fabs(self.way) <= c.FORWARD_MARGIN:
+                print "forward>>>"
+                return('fullfw', 0.8)
+            
+          elif self.way > c.FORWARD_MARGIN:
+             if forwardFlage:
+                print "left>>>>",self.way_percent
+                return ('left', self.way_percent)
+             else: 
+                print "step left>>>",self.way_percent
+                return ('stepleft', 0.5)
+
+          elif self.way < - c.FORWARD_MARGIN:
+             if forwardFlage:
+                print "right>>>",self.way_percent
+                return ('right', self.way_percent)
+             else: 
+                print "step right>>>",self.way_percent
+                return ('stepright', 0.5)
+          else:
+             print '!!!!!!!No Action Consider!!!!!!!!!'
+             print '!!!!!!!No Action Consider!!!!!!!!!'
+             print '!!!!!!!No Action Consider!!!!!!!!!'
+             print '!!!!!!!No Action Consider!!!!!!!!!'
 
